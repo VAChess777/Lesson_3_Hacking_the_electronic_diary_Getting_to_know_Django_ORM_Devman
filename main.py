@@ -1,21 +1,18 @@
 import argparse
-from math import e
 import os
 import random
 
 import django
+
 from django.core.exceptions import MultipleObjectsReturned
-
-from datacenter.models import Schoolkid
-from datacenter.models import Mark
-from datacenter.models import Lesson
-from datacenter.models import Commendation
-from datacenter.models import Chastisement
-from datacenter.models import Subject
-
+from django.core.exceptions import ObjectDoesNotExist
 
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'project.settings')
 django.setup()
+
+from datacenter.models import (
+    Schoolkid, Mark, Lesson, Commendation, Chastisement, Subject
+)
 
 
 commendations = [
@@ -42,52 +39,76 @@ def fix_marks(schoolkid):
 
 def remove_chastisements(schoolkid):
     chastisements = Chastisement.objects.filter(schoolkid=schoolkid)
-    chastisements.delete()
+    return chastisements.delete()
 
 
+def create_commendation(schoolkid, subject, text):
+    lessons = Lesson.objects.filter(
+        year_of_study=schoolkid.year_of_study,
+        group_letter=schoolkid.group_letter,
+        subject__title=subject
+    ).order_by('?')
+    # print(update_lesson.date)
+    lesson = lessons.first()
+    commendation = Commendation.objects.create(
+        text=text,
+        created=lesson.date,
+        schoolkid=schoolkid,
+        subject=lesson.subject,
+        teacher=lesson.teacher
+    )
+    return commendation
 
 
+def create_parser():
+    parser = argparse.ArgumentParser(
+        description=
+        'Let\'s fix the karma in the diary'
+    )
+    parser.add_argument(
+        'schoolkid_and_subject',
+        help=
+        'Enter the command in console: $ python main.py schoolkid_and_subject {Фролов Иван Математика}. '
+        'Enter the last name and first name of the student who needs to pump the diary,'
+        ' as well as the subject on which you need to receive praise from the teacher.'        
+        'For example: Фролов Иван Математика',
+        nargs='+',
+        type=str,
+        default=None,
+    )
+    return parser
 
 
+def main():
+    parser = create_parser()
+    schoolkid_name = ' '.join(parser.parse_args().schoolkid_and_subject[1:3])
+    subject = ' '.join(parser.parse_args().schoolkid_and_subject[3:])
+    year_of_study = 6
+    group_letter = 'А'
+    try:
+        schoolkid = Schoolkid.objects.get(
+            full_name__contains=schoolkid_name,
+            year_of_study=year_of_study,
+            group_letter=group_letter)
+        print(f'Исправлено оценок - {fix_marks(schoolkid)}')
+        print(f'Удалено замечаний - {remove_chastisements(schoolkid)}')
+        commendation = create_commendation(schoolkid, subject, random.choice(commendations))
+        print(
+            f'Похвала от учителя: {commendation.text}\n'
+            f'Учитель: {commendation.teacher}\n'
+            f'Предмет: {subject}\n'
+            f'Дата похвалы от учителя: {commendation.created}'
+        )
+    except Schoolkid.DoesNotExist:
+        print(f'Не нашёл ученика {schoolkid_name} в классе {year_of_study}{group_letter}')
+    except Schoolkid.MultipleObjectsReturned:
+        print(f'Несколько учеников {schoolkid_name} в классе {year_of_study}{group_letter}')
+    except Subject.DoesNotExist:
+        print(f'Предмет  {subject} в классе {year_of_study} не найден')
+    except Lesson.DoesNotExist:
+        print('Урок не найден')
 
 
+if __name__ == '__main__':
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+    main()
