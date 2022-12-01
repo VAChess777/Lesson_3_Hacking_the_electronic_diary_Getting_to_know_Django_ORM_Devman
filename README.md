@@ -1,51 +1,59 @@
-# Электронный дневник школы
+# Hacking the electronic diary 
 
-Этот сайт - интерфейс для учеников школы. Здесь можно посмотреть оценки, расписание и прочую открытую информацию. Учителя заполняют базу данных через другой сайт. Ставят там оценки и т.д.
+The program hacks the database of the electronic diary of the school, removes the student's bad grades. Replaces bad grades with good ones. Removes bad comments in the student's diary. Praises students, instead of teachers)))
+### Software environment and installation:
 
-## Описание моделей
+Python3 should already be installed.
 
-На сайте есть ученики: `Schoolkid`. Класс ученика определяется через комбинацию его полей `year_of_study` — год обучения и `group_letter` — литера класса. Вместе получается, например, 10А. Ученик связан со следующими моделями:
+### Program installation:
 
-- `Mark` — оценка на уроке, от 2 до 5.
-- `Commendation` — похвала от учителя, за особые достижения.
-- `Chastisement` — замечание от учителя, за особые проступки.
+Download the code: [https://github.com/VAChess777/Lesson_3_Hacking_the_electronic_diary_Getting_to_know_Django_ORM_Devman](https://github.com/VAChess777/Lesson_3_Hacking_the_electronic_diary_Getting_to_know_Django_ORM_Devman), or clone the `git` repository to a local folder:
+```
+git clone https://github.com/VAChess777/Lesson_3_Hacking_the_electronic_diary_Getting_to_know_Django_ORM_Devman.git
+```
 
-Все 3 объекта связаны не только с учителем, который их создал, но и с учебным предметом (`Subject`). Примеры `Subject`:
+### Installing dependencies:
+ 
+Use `pip` (or `pip3`, if there is a conflict with Python2) to install dependencies:
+```bach
+pip install -r requirements.txt
+```
 
-- Математика 8 класса
-- Геометрия 11 класса
-- Русский язык 1 класса
-- Русский язык 4 класса
+### About environment variables:
 
-`Subject` определяется не только названием, но и годом обучения, для которого учебный предмет проходит.
+The program `settings.py ` there are environment variables in the `project` folder that are responsible for configuring access to the database.
+create a `.env` file, place it in the root directory of the program. Put the following data in the `.env` file in the `key=value` format.
+                                                               
+`DB_NAME=` - Database name. 
+`SECRET_KEY=` - Django secret key.              
+`DEBUG=` - True for enabling debugging mode, False for production. The default value is `False`.                                                         
+`ALLOWED_HOSTS=` - This is a security measure to prevent HTTP Host header attacks, which are possible even under many seemingly-safe web server configurations.
+Example of ALLOWED_HOSTS settings in file. env - `ALLOWED_HOSTS = ['www.djangoproject.dev', 'docs.djangoproject.dev', 'localhost' ...]`. Where
+`www.djangoproject.dev', 'docs.djangoproject.dev, 'localhost'` -  addresses of allowed hosts. The default value is `localhost`.   
 
-За расписание уроков отвечает модель `Lesson`. Каждый объект `Lesson` — урок в расписании. У урока есть комбинация `year_of_study` и `group_letter`, благодаря ей можно узнать для какого класса проходит этот урок. У урока есть `subject` и `teacher`, которые отвечают на вопросы "что за урок" и "кто ведёт". У урока есть `room` — номер кабинета, где он проходит. Урок проходит в дату `date`.
+### How to run the program:
 
-Расписание в школе строится по слотам:
+Enter the command in console: `$ python main.py schoolkid_and_subject {Фролов Иван Математика}`. Enter the last name and first name of the student who needs to pump the diary,
+as well as the subject on which you need to receive praise from the teacher. For example: `python main.py schoolkid_and_subject Фролов Иван Математика`.
 
-- 8:00-8:40 — 1 урок
-- 8:50-9:30 — 2 урок
-- ...
+### How the program works:
 
-У каждого `Lesson` есть поле `timeslot`, которое объясняет, какой номер у этого урока в расписании.
+The program contains scripts:
 
-## Запуск
+```main.py``` - the main program.  
+```manage.py``` - the program that runs the server.
+```settings.py``` - the program is located in the project folder. Responsible for setting up access to the employee database.   
+```models.py``` - the program is located in the datacenter folder. The program is responsible for data models and their fields.          
+```urls.py``` - the program is located in the project folder. Responsible for setting up links to the 'security console' pages.          
+            
+### Features works of the program:
 
-- Скачайте код
-- Установите зависимости командой `pip install -r requirements.txt`
-- Создайте БД командой `python3 manage.py migrate`
-- Запустите сервер командой `python3 manage.py runserver`
+The `main.py` program contains the functions:
 
-## Переменные окружения
+* The `active_passcards_view` function - get active employee passes from the database.
 
-Часть настроек проекта берётся из переменных окружения. Чтобы их определить, создайте файл `.env` рядом с `manage.py` и запишите туда данные в таком формате: `ПЕРЕМЕННАЯ=значение`.
 
-Доступны 3 переменные:
-- `DEBUG` — дебаг-режим. Поставьте True, чтобы увидеть отладочную информацию в случае ошибки.
-- `SECRET_KEY` — секретный ключ проекта
-- `ALLOWED_HOSTS` — см [документацию Django](https://docs.djangoproject.com/en/3.1/ref/settings/#allowed-hosts).
-- `DATABASE_NAME` — путь до базы данных, например: `schoolbase.sqlite3`
 
-## Цели проекта
+### Project Goals
 
-Код написан в учебных целях — это урок в курсе по Python и веб-разработке на сайте [Devman](https://dvmn.org).
+This code was written for educational purposes as part of an online course for web developers at [dvmn.org](https://dvmn.org/).
