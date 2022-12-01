@@ -4,9 +4,6 @@ import random
 
 import django
 
-from django.core.exceptions import MultipleObjectsReturned
-from django.core.exceptions import ObjectDoesNotExist
-
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'project.settings')
 django.setup()
 
@@ -30,9 +27,7 @@ commendations = [
 def fix_marks(schoolkid):
     bad_marks = Mark.objects.filter(schoolkid=schoolkid, points__in=[1, 2, 3]).all()
     for mark in bad_marks:
-        # print(mark)
         mark.points = 5
-        # print(mark)
         mark.save()
     return bad_marks.count()
 
@@ -48,7 +43,6 @@ def create_commendation(schoolkid, subject, text):
         group_letter=schoolkid.group_letter,
         subject__title=subject
     ).order_by('?')
-    # print(update_lesson.date)
     lesson = lessons.first()
     commendation = Commendation.objects.create(
         text=text,
