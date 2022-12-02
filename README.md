@@ -50,9 +50,11 @@ The program contains scripts:
 
 The `main.py` program contains the functions:
 
-* The `active_passcards_view` function - get active employee passes from the database.
-
-
+* The `fix_marks` function - corrects a student's bad grades.
+* The `remove_chastisements` function - deletes student's comments in the diary from teachers.
+* The `create_commendation` function - creates in the diary good reviews from teachers for the student.
+* The `create_parser` function - parser function.
+* The `main` function - main function.
 
 ### Project Goals
 
