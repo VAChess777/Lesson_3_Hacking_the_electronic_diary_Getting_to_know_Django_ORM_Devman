@@ -112,14 +112,18 @@ def main():
         schoolkid = Schoolkid.objects.get(
             full_name__contains=schoolkid_name,
             year_of_study=year_of_study,
-            group_letter=group_letter)
+            group_letter=group_letter
+        )
         print(f'Исправлено оценок - {fix_marks(schoolkid)}')
         print(f'Удалено замечаний - {remove_chastisements(schoolkid)}')
-        print(f'Добавлена похвала от учителя - {(create_commendation(schoolkid, subject, text)).text}')
+        print(f'Добавлена похвала от учителя - '
+              f'{(create_commendation(schoolkid, subject, text)).text}')
     except Schoolkid.DoesNotExist:
-        print(f'Не нашёл ученика {schoolkid_name} в классе {year_of_study}{group_letter}')
+        print(f'Не нашёл ученика {schoolkid_name} '
+              f'в классе {year_of_study}{group_letter}')
     except Schoolkid.MultipleObjectsReturned:
-        print(f'Несколько учеников {schoolkid_name} в классе {year_of_study}{group_letter}')
+        print(f'Несколько учеников {schoolkid_name} '
+              f'в классе {year_of_study}{group_letter}')
 
 
 if __name__ == '__main__':
