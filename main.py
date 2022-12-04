@@ -12,7 +12,7 @@ from datacenter.models import (
 )
 
 
-Commendations = [
+COMMENDATION = [
         'Молодец!',
         'Отлично!',
         'Хорошо!',
@@ -109,7 +109,7 @@ def main():
     subject = ' '.join(parser.parse_args().schoolkid_and_subject[3:])
     year_of_study = parser.parse_args().year
     group_letter = parser.parse_args().group_letter
-    text = random.choice(Commendations)
+    text = random.choice(COMMENDATION)
     try:
         schoolkid = Schoolkid.objects.get(
             full_name__contains=schoolkid_name,
